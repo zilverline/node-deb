@@ -213,6 +213,12 @@ while [ -n "$1" ]; do
       template_upstart="$param"
       shift
       ;;
+    --node-version)
+      # HELPDOC: The node version the package should depend on
+      zero_check "$value" "$param"
+      node_version="$value"
+      shift
+      ;;
     -u | --user)
       # HELPDOC: The Unix user the process will run as (default: 'node_deb.user' from package.json then $package-name)
       zero_check "$value" "$param"
@@ -300,12 +306,13 @@ if [ -z "$node_version" ]; then
   if [[ "$node_version" == 'null' ]]; then
     node_version=""
   fi
-
-  # Format version to Debian Control File format
-  if [[ "x$node_version" != 'x' ]]; then
-    node_version="(= $node_version)"
-  fi
 fi
+
+# Format version to Debian Control File format
+if [[ "x$node_version" != 'x' ]]; then
+  node_version="(= $node_version)"
+fi
+
 log_debug "The nodejs version has been set to: $node_version"
 
 # Set the package description
