@@ -3,6 +3,6 @@ Version: {{ node_deb_package_version }}
 Section: base
 Priority: optional
 Architecture: {{ node_deb_architecture }}
-Depends: nodejs
+Depends: nodejs {{ node_version }}
 Maintainer: {{ node_deb_package_maintainer }}
 Description: {{ node_deb_package_description }}

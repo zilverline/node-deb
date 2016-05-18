@@ -287,6 +287,27 @@ if [ -z "$architecture" ]; then
 fi
 log_debug "The package architecture has been set to: $architecture"
 
+# Set the nodejs dependency version
+if [ -z "$node_version" ]; then
+  if [ -f .nvmrc ]; then
+    node_version=$(cat .nvmrc)
+  fi
+
+  if [[ "x$node_version" == 'x' ]]; then
+    node_version=$(jq -r '.node_deb.node_version' package.json)
+  fi
+
+  if [[ "$node_version" == 'null' ]]; then
+    node_version=""
+  fi
+
+  # Format version to Debian Control File format
+  if [[ "x$node_version" != 'x' ]]; then
+    node_version="(= $node_version)"
+  fi
+fi
+log_debug "The nodejs version has been set to: $node_version"
+
 # Set the package description
 if [ -z "$package_description" ]; then
   package_description=$(jq -r '.node_deb.description' package.json)
@@ -480,6 +501,7 @@ replace_vars() {
     -e "s/{{ node_deb_group }}/$(escape $group)/g" \
     -e "s/{{ node_deb_init }}/$(escape $init)/g" \
     -e "s/{{ node_deb_version }}/$(escape $node_deb_version)/g" \
+    -e "s/{{ node_version }}/$(escape $node_version)/g" \
   > "$target_file"
   ### END TEMPLATE_VARS ###
 }
